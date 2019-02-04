@@ -140,6 +140,23 @@ namespace AccountBalance.Infrastructure.Data.EventStore
             return _accounts;
         }
 
+        public async Task<float> GetTodayWithdraw(GetTodayWithdrawQuery query, CancellationToken cancellationToken)
+        {
+            var conn = await Connect();
+            float todayWithdraw = default(float);
+            var streamEvents = conn.ReadStreamEventsForwardAsync(query.AccountId.Value, 0, 100, true, _adminCredentials).Result;
+            foreach (var evt in streamEvents.Events) {
+                var json = Encoding.UTF8.GetString(evt.Event.Data);
+                var account = JsonConvert.DeserializeObject<AccountReadModel>(json);
+                if (!account.Amount.Equals(default(float))) {
+                    if (evt.Event.EventType.ToLower().Contains("withdraw") && evt.Event.Created.Date == DateTime.Today.Date)
+                        todayWithdraw += account.Amount;
+                }
+            }
+            conn.Close();
+            return todayWithdraw;
+        }
+
         public async void CreateProjection(ProjectionsManager pm)
         {
             var getAllStreams = @"options({
@@ -166,27 +183,27 @@ namespace AccountBalance.Infrastructure.Data.EventStore
 
 
 
-        public void BuildingAccount(AccountReadModel account, AccountId accountId, out Account _account)
-        {
-            _account = new Account(accountId);
+        //public void BuildingAccount(AccountReadModel account, AccountId accountId, out Account _account)
+        //{
+        //    _account = new Account(accountId);
 
-            if (!string.IsNullOrEmpty(account.HolderName)) {
-                _account.HolderName = account.HolderName;
-                _account.Balance = account.Balance;
-                _account.AccountState = account.AccountState;
-            }
-            if (!account.Balance.Equals(default(float))) {
-                _account.Balance = account.Balance;
-            }
-            if (!account.DailyWireTransferLimit.Equals(default(float))) {
-                _account.DailyWireTransferLimit = account.DailyWireTransferLimit;
-            }
-            if (!account.OverDraftLimit.Equals(default(float))) {
-                _account.OverDraftLimit = account.OverDraftLimit;
-            }
-        }
+        //    if (!string.IsNullOrEmpty(account.HolderName)) {
+        //        _account.HolderName = account.HolderName;
+        //        _account.Balance = account.Balance;
+        //        _account.AccountState = account.AccountState;
+        //    }
+        //    if (!account.Balance.Equals(default(float))) {
+        //        _account.Balance = account.Balance;
+        //    }
+        //    if (!account.DailyWireTransferLimit.Equals(default(float))) {
+        //        _account.DailyWireTransferLimit = account.DailyWireTransferLimit;
+        //    }
+        //    if (!account.OverDraftLimit.Equals(default(float))) {
+        //        _account.OverDraftLimit = account.OverDraftLimit;
+        //    }
+        //}
 
-        class Streams
+        public class Streams
         {
             public List<string> StreamNames { get; set; }
         }

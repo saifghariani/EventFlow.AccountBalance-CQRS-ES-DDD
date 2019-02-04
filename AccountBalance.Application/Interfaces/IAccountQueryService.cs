@@ -10,5 +10,6 @@ namespace AccountBalance.Application.Interfaces
     {
         Task<Account> GetAccountByIdAsync(AccountId accountId);
         Task<List<Account>> GetAllAccountsAsync();
+        Task<float> GetTodayWithdrawAsync(AccountId accountId);
     }
 }

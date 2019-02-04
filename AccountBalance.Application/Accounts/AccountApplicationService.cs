@@ -44,12 +44,24 @@ namespace AccountBalance.Application.Accounts
 
         public async Task WithdrawCashAsync(AccountId accountId, float amount)
         {
-            await _commandBus.PublishAsync(new WithdrawCashCommand(accountId, amount), CancellationToken.None)
-                .ConfigureAwait(false);
-
             var account = await _accountQueryService.GetAccountByIdAsync(accountId);
+
+            if (account.AccountState == AccountState.Blocked)
+                throw new SystemException("Unable to Withdraw : Blocked Account");
+            var withdrawnToday = await _accountQueryService.GetTodayWithdrawAsync(accountId);
+            if (withdrawnToday + amount > account.DailyWireTransferLimit)
+            {
+                var leftToWithdraw = account.DailyWireTransferLimit - withdrawnToday;
+                throw new Exception("Unable to Withdraw : DailyLimit reached\nYou have : "+ leftToWithdraw + " left to withdraw today");
+            }
+
+            await _commandBus.PublishAsync(new WithdrawCashCommand(accountId, amount), CancellationToken.None)
+                    .ConfigureAwait(false);
+
+            account.Balance -= amount; 
             if (account.Balance < 0 && Math.Abs(account.Balance) > account.OverDraftLimit)
                 await _commandBus.PublishAsync(new BlockAccountCommand(accountId), CancellationToken.None);
+
         }
 
         public async Task DepositCashAsync(AccountId accountId, float amount)

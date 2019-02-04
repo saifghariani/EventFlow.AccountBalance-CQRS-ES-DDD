@@ -44,5 +44,11 @@ namespace AccountBalance.Application.Accounts
             }
             return accounts;
         }
+
+        public async Task<float> GetTodayWithdrawAsync(AccountId accountId)
+        {
+            var todayWithdraw = await _queryProcessor.ProcessAsync(new GetTodayWithdrawQuery(accountId), CancellationToken.None);
+            return todayWithdraw;
+        }
     }
 }

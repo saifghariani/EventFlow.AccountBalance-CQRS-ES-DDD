@@ -11,5 +11,6 @@ namespace AccountBalance.Application.Accounts.Queries.Abstract
     {
         Task<Account> GetAccountById(GetAccountByIdQuery query, CancellationToken cancellationToken);
         Task<List<Account>> GetAllAccounts(GetAllAccountsQuery query, CancellationToken cancellationToken);
+        Task<float> GetTodayWithdraw(GetTodayWithdrawQuery query, CancellationToken cancellationToken);
     }
 }
