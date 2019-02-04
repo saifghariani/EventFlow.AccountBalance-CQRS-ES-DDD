@@ -58,7 +58,14 @@ namespace AccountBalance.Api.Controllers
         [HttpPut("withdraw")]
         public async Task<IActionResult> WithdrawCash([FromBody]WitddrawCashDTO model)
         {
-            await _accountApplicationService.WithdrawCashAsync(AccountId.With(model.AccountId), model.Amount);
+            try
+            {
+                await _accountApplicationService.WithdrawCashAsync(AccountId.With(model.AccountId), model.Amount);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new {Error = e.Message});
+            }
             return Ok(new {isSuccess = true});
         }
 
