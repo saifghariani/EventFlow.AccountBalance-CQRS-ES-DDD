@@ -2,7 +2,7 @@
 
 To start the project: 
   1. Install [Event Store](https://eventstore.org/docs/getting-started/)
-  2. Launch Event Store using the command :  
+  2. Launch Event Store using command :  
   
       ```
       EventStore.ClusterNode.exe --db ./db --log ./log --run-projections=all --start-standard-projections=true
