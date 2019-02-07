@@ -95,7 +95,7 @@ namespace AccountBalance.Api.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("withdraw")]
-        public async Task<IActionResult> WithdrawCash([FromBody]WitddrawCashDTO model)
+        public async Task<IActionResult> WithdrawCash([FromBody]WithdrawCashDTO model)
         {
             try
             {
