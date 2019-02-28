@@ -32,18 +32,29 @@ namespace AccountBalance.Application.Accounts
 
         public async Task SetDailyWireTransferLimitAsync(AccountId accountId, float dailyWireTransferLimit)
         {
+            if (dailyWireTransferLimit < 0)
+            {
+                throw new Exception("Daily Wire Transfer Limit cannot be a negative value");
+            }
             await _commandBus.PublishAsync(new SetDailyWireTransferLimitCommand(accountId, dailyWireTransferLimit), CancellationToken.None)
                 .ConfigureAwait(false);
         }
 
         public async Task SetOverDraftLimitAsync(AccountId accountId, float overDraftLimit)
         {
+            if (overDraftLimit < 0) {
+                throw new Exception("Over Draft Limit cannot be a negative value");
+            }
             await _commandBus.PublishAsync(new SetOverDraftLimitCommand(accountId, overDraftLimit), CancellationToken.None)
                 .ConfigureAwait(false);
         }
 
         public async Task WithdrawCashAsync(AccountId accountId, float amount)
         {
+            if (amount < 0) {
+                throw new Exception("Cannot withdraw a negative value");
+            }
+
             var account = await _accountQueryService.GetAccountByIdAsync(accountId);
 
             if (account.AccountState == AccountState.Blocked)
@@ -66,6 +77,10 @@ namespace AccountBalance.Application.Accounts
 
         public async Task DepositCashAsync(AccountId accountId, float amount)
         {
+            if (amount < 0) {
+                throw new Exception("Cannot deposit a negative value");
+            }
+
             await _commandBus.PublishAsync(new DepositCashCommand(accountId, amount), CancellationToken.None)
                 .ConfigureAwait(false);
 
@@ -76,6 +91,10 @@ namespace AccountBalance.Application.Accounts
 
         public async Task DepositCheckAsync(AccountId accountId, float amount)
         {
+            if (amount < 0) {
+                throw new Exception("Cannot deposit a negative value");
+            }
+
             await _commandBus.PublishAsync(new DepositCheckCommand(accountId, amount), CancellationToken.None)
                 .ConfigureAwait(false);
 
