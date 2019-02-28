@@ -7,5 +7,5 @@ To start the project:
       ```
       EventStore.ClusterNode.exe --db ./db --log ./log --run-projections=all --start-standard-projections=true
       ```
-  3. Set AccountBalance.Api as StartUp Project and run the project
+  3. Set AccountBalance.Api as StartUp Project, build &run the project
   

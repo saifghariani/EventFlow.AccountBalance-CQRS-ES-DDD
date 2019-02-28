@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AccountBalance.Api.Models;
+﻿using AccountBalance.Api.Models;
 using AccountBalance.Application.Interfaces;
 using AccountBalance.Domain.Aggregates.AccountAggregate;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
+using System;
+using System.Threading.Tasks;
 
 namespace AccountBalance.Api.Controllers
 {
@@ -17,7 +15,7 @@ namespace AccountBalance.Api.Controllers
         private readonly IAccountApplicationService _accountApplicationService;
         private readonly IAccountQueryService _accountQueryService;
 
-        public AccountController(IAccountApplicationService accountApplicationService, IAccountQueryService accountQueryService) 
+        public AccountController(IAccountApplicationService accountApplicationService, IAccountQueryService accountQueryService)
         {
             _accountApplicationService = accountApplicationService;
             _accountQueryService = accountQueryService;
@@ -28,6 +26,7 @@ namespace AccountBalance.Api.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("new")]
+        [SwaggerResponse(200, "account created with Id", typeof(object))]
         public async Task<IActionResult> CreateAccount([FromBody]CreateAccountDTO model)
         {
             var accountId = await _accountApplicationService.CreateAccountAsync(model.HolderName);
@@ -96,7 +95,7 @@ namespace AccountBalance.Api.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPut("withdraw")]
-        public async Task<IActionResult> WithdrawCash([FromBody]WitddrawCashDTO model)
+        public async Task<IActionResult> WithdrawCash([FromBody]WithdrawCashDTO model)
         {
             try
             {
@@ -104,9 +103,9 @@ namespace AccountBalance.Api.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new {Error = e.Message});
+                return BadRequest(new { Error = e.Message });
             }
-            return Ok(new {isSuccess = true});
+            return Ok(new { isSuccess = true });
         }
         /// <summary>
         /// Deposit Cash Into Account 
